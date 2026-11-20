@@ -1,0 +1,16 @@
+/* 生产 · 清场 */
+:root {
+  color-scheme: light;
+  --bg: #f6eee3; --rail: #3e2921; --accent: #9f3d25; --ink: #3c2721;
+  --panel: color-mix(in srgb, var(--bg) 91%, white);
+  --line: color-mix(in srgb, var(--ink) 24%, var(--bg));
+  --mute: color-mix(in srgb, var(--ink) 78%, var(--bg));
+  --th: color-mix(in srgb, var(--panel) 84%, var(--accent));
+  --rail-ink: #f2f0e9;
+  --primary: #fff;
+  --bad: #832635;
+  --ui: Baskerville, serif; --mono: ui-monospace, Menlo, monospace;
+  --pad: 19px; --row: 39px; --gap: 19px;
+  --figure: 28px; --title: 45px; --graph: 54px;
+  --scroll: 396px;
+}

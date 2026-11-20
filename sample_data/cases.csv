@@ -1,0 +1,8 @@
+case,换线记录,配方申报
+residue,"10,A,B,RUN,无;4,B,C,CLEAN,PASS;1,A,A1,RUN,蛋",A1=蛋;B=无
+verified,"1,A,A1,RUN,蛋;5,A,C,CLEAN,PASS;10,A,B,RUN,无",A1=蛋;B=无
+invalid_clean,"1,A,A1,RUN,蛋;5,A,C,CLEAN,FAIL;10,A,B,RUN,无",A1=蛋;B=无
+declared_residue,"1,A,A1,RUN,蛋;10,A,B,RUN,奶",A1=蛋;B=奶+蛋
+collision,"1,A,A1,RUN,蛋;1,A,C,CLEAN,PASS",A1=蛋
+unknown,"1,A,A1,RUN,辣椒",A1=无
+no_definition,"1,A,A1,RUN,无",无
