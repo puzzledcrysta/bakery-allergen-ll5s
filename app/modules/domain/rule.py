@@ -38,15 +38,24 @@ def evaluate(row):
     if used != declarations.keys():
         raise DataError('BUSINESS','生产与配方批号不一致')
     residue, proof, passed = defaultdict(set), [], 0
-    for _,line,batch,action,note in sorted(records):
+    line_passed, line_total = defaultdict(int), defaultdict(int)
+    for _, line, batch, action, note in sorted(records):
         if action == 'CLEAN':
             if note == 'PASS':
                 residue[line].clear()
             continue
         residue[line].update(allergens(note))
+        line_total[line] += 1
         missing = residue[line]-declarations[batch]
         if not missing:
             passed += 1
+            line_passed[line] += 1
         state = '扣留 ' + '+'.join(sorted(missing)) if missing else '可放行'
-        proof.append((f'{line} / {batch}',state,''))
-    return Decimal(passed), proof
+        proof.append((f'{line} / {batch}', state, ''))
+    # 产线级对账依据：每条产线各自的可放行批数与生产批数，供班次边界裁决。
+    lines = [{'line': name,
+              'releasable': line_passed[name],
+              'produced': line_total[name],
+              'held': line_total[name]-line_passed[name]}
+             for name in sorted(line_total)]
+    return Decimal(passed), proof, lines

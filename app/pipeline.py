@@ -10,10 +10,10 @@ def stages(source):
     raw = intake(source)
     contract, rejected = normalize(raw)
     quality = inspect(contract,rejected)
-    accepted, domain_bad = calculate(quality['ready'])
+    accepted, domain_bad, line_rollup = calculate(quality['ready'])
     bad = sorted([*quality['rejected'],*domain_bad],key=lambda row:row['line'])
     return {'intake':raw,'contract':contract,'quality':quality,'accepted':accepted,
-            'domain_bad':domain_bad,'rejected':bad}
+            'domain_bad':domain_bad,'rejected':bad,'line_rollup':line_rollup}
 
 
 def execute(source,book):
@@ -26,4 +26,5 @@ def execute(source,book):
     if not balanced:
         raise RuntimeError('来源记录数量无法闭合')
     return {'counts':counts,'balanced':balanced,'accepted':accepted,'quarantine':bad,'suppressed':suppressed,
-            'reasons':distribution(bad),'book':compare(accepted,book),'encoding':raw['encoding']}
+            'line_rollup':result['line_rollup'],
+            'reasons':distribution(bad),'book':compare(accepted,book,result['line_rollup']),'encoding':raw['encoding']}

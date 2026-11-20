@@ -50,8 +50,19 @@ class Review(BaseModel):
     note: str = Field(default='',max_length=500)
 
 
+class BoundaryLine(BaseModel):
+    line: str = Field(min_length=1, max_length=64)
+    release: int = Field(ge=0)
+
+
+class Boundary(BaseModel):
+    version: int = Field(ge=0)
+    items: list[BoundaryLine] = Field(min_length=1, max_length=240)
+    note: str = Field(default='', max_length=500)
+
+
 def read_sample(name):
-    choices = {'shift':'shift.csv','external':'external.csv'}
+    choices = {'shift':'shift.csv','external':'external.csv','shift_book':'external_shift.csv'}
     if name not in choices:
         raise DataError('DEMO_UNKNOWN','没有此样例',404)
     return SAMPLE_ROOT.joinpath(choices[name]).read_bytes()

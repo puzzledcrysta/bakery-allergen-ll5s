@@ -13,6 +13,11 @@ CREATE TABLE IF NOT EXISTS reviews (
   decision TEXT NOT NULL, note TEXT NOT NULL, changed TEXT NOT NULL,
   PRIMARY KEY(run_id,version)
 );
+CREATE TABLE IF NOT EXISTS boundaries (
+  run_id TEXT NOT NULL REFERENCES runs(id), version INTEGER NOT NULL,
+  line TEXT NOT NULL, release INTEGER NOT NULL, note TEXT NOT NULL, changed TEXT NOT NULL,
+  PRIMARY KEY(run_id,version,line)
+);
 """
 
 

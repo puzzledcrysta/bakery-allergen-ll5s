@@ -22,7 +22,90 @@ function notice(message, error = false) {
 }
 
 function tag(code) {
-  return el('span', settings.reasons[code] || code, code === 'MATCH' ? 'state' : 'state problem');
+  return el('span', settings.reasons[code] || code, code === 'MATCH' || code === 'SHIFT_MATCH' ? 'state' : 'state problem');
+}
+
+function shiftSummary(book) {
+  const shift = book.shift;
+  const block = el('div', undefined, 'shift-summary');
+  const head = el('p');
+  if (shift.code === 'NO_SHIFT_TOTAL') {
+    head.append(el('span', '外部账未提供班次总额，仅逐链对账', 'state problem'));
+  } else {
+    head.append(
+      el('span', `班次 ${shift.shift} · 内部可放行 ${shift.internal_total} · 外部总额 ${shift.external_total} · 差值 ${shift.delta} `),
+      tag(shift.code),
+    );
+  }
+  block.append(head);
+  return block;
+}
+
+async function boundaryPanel(id) {
+  const view = await query(`/api/boundary/${id}`);
+  const box = el('div', undefined, 'boundary');
+  const head = el('p');
+  head.append(el('strong', `放行边界 v${view.version}`));
+  if (view.external_total !== null) {
+    head.append(el('span', ` · 已放行 ${view.release_total}/${view.external_total} · 待确认 ${view.pending} `));
+    const cap = el('span', view.within_shift_cap ? '未超班次总额' : '超出班次总额',
+      view.within_shift_cap ? 'state' : 'state problem');
+    head.append(cap);
+  }
+  box.append(head);
+
+  const grid = el('table');
+  const columns = ['产线', '可放行', '生产', '扣留', '关联生产链', '当前状态', '本次放行'];
+  const thead = el('thead');
+  const top = el('tr');
+  for (const label of columns) {
+    const th = el('th', label);
+    th.scope = 'col';
+    top.append(th);
+  }
+  thead.append(top);
+  const tbody = el('tbody');
+  const inputs = new Map();
+  for (const line of view.lines) {
+    const tr = el('tr');
+    const cells = [line.line, line.releasable, line.produced, line.held, line.keys.join(', '), line.state];
+    for (const value of cells) tr.append(el('td', String(value)));
+    const control = el('input');
+    control.type = 'number';
+    control.min = '0';
+    control.max = line.releasable;
+    control.value = line.release;
+    inputs.set(line.line, control);
+    const cell = el('td');
+    cell.append(control);
+    tr.append(cell);
+    tbody.append(tr);
+  }
+  grid.append(tbody);
+  box.append(grid);
+
+  const noteLabel = el('label', '复核意见');
+  const note = el('textarea');
+  note.maxLength = 500;
+  note.placeholder = '有差额或部分放行时须填写意见';
+  noteLabel.append(note);
+  const submit = el('button', '登记放行边界', 'btn btn--primary');
+  submit.type = 'button';
+  submit.addEventListener('click', async () => {
+    submit.disabled = true;
+    try {
+      const items = [...inputs.entries()].map(([line, control]) =>
+        ({line, release: Number(control.value)}));
+      const fresh = await query(`/api/boundary/${id}`, {version: view.version, items, note: note.value});
+      notice(`放行边界已登记 v${fresh.version}`);
+      await render();
+    } catch (error) { notice(error.message, true); }
+    finally { submit.disabled = false; }
+  });
+  const actions = el('div', undefined, 'actions');
+  actions.append(submit);
+  box.append(noteLabel, actions);
+  return box;
 }
 
 
@@ -108,6 +191,12 @@ async function render() {
     } else if (stage === 'reconcile') {
       view = [key, ['实际', 'amount', 'num'], ['外部账', 'reference', 'num'], ['差值', 'delta', 'num'], ['外部行', 'book_line', 'num'], ['结论', row => tag(row.code)]];
       rows = [...result.book.rows].sort((a,b) => Number(a.code === 'MATCH') - Number(b.code === 'MATCH'));
+      if (ticket === renderEpoch) {
+        const holder = el('div');
+        table(holder, view, rows);
+        body.replaceChildren(shiftSummary(result.book), holder, await boundaryPanel(id));
+        return;
+      }
     } else if (stage === 'intake') {
       const intake = await query('/api/intake', inputs);
       view = [line, ['分类', 'kind'], ['字段', raw]];

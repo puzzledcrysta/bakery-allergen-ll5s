@@ -105,3 +105,11 @@ h2 { margin: 0; font-size: 14px; }
 .source .actions > .btn { min-width: 85px; text-align: center; }
 .source details { padding-block-start: 8px; margin-block-start: 9px; border-top: 3px double #ad8069; }
 .brand { border-inline-start: 3px solid #c1a594; padding-inline-start: 8px; }
+
+.shift-summary { padding: 10px 12px; background: #f9f4ea; border-inline-start: 4px solid #ae7760; margin-bottom: 12px; }
+.shift-summary p { margin: 0; }
+.boundary { padding: 12px; border: 1px solid var(--line); border-radius: 2px; }
+.boundary > p { margin: 0 0 10px; }
+.boundary table { margin-bottom: 12px; }
+.boundary input[type=number] { width: 92px; padding: 4px 6px; background: var(--bg); color: var(--ink); border: 1px solid var(--line); }
+.boundary label { display: block; margin-top: 8px; }

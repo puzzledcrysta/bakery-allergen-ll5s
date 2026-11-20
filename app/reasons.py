@@ -7,6 +7,11 @@ REASONS = {
     'REV_CONFLICT': '最高版本证据有冲突', 'BUSINESS': '业务规则无法判定',
     'MISSING_BOOK': '外部账缺少业务键', 'MISSING_RESULT': '复算结果缺少业务键',
     'AMOUNT_DELTA': '复算与外部账计量不同', 'BOOK_CONFLICT': '独立账含重复业务键',
+    'SHIFT_CONFLICT': '外部账重复登记班次总额', 'SCOPE_UNKNOWN': '外部账范围无法识别',
+    'SHIFT_MATCH': '班次总额与内部可放行数相符', 'SHIFT_DELTA': '班次总额与内部可放行数不符',
+    'NO_SHIFT_TOTAL': '外部账未提供班次总额',
+    'BOUNDARY_LIMIT': '放行数超出该产线可放行数', 'BOUNDARY_TOTAL': '放行总数超出外部班次总额',
+    'BOUNDARY_LINE': '存在不属于本班次的产线', 'BOUNDARY_STALE': '放行边界版本已过期',
     'RUN_UNKNOWN': '没有此批次', 'DEMO_UNKNOWN': '没有此样例', 'STALE': '复核版本已过期',
     'REVIEW_NOTE': '有差异时须填写复核意见', 'REVIEW_DECISION': '复核结论无效',
 }
